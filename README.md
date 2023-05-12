@@ -1,67 +1,63 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-
-using namespace std;
-
-const int ARRAY_SIZE = 9;
-
-struct human 
-    {
-        string first_name;
-        string last_name;
-        int birth_year;
-    };
-
-void sort_by_year(human arr[]) 
-    {
-        for (int i = 0; i < ARRAY_SIZE - 1; i++) 
-            {
-                for (int j = i + 1; j < ARRAY_SIZE; j++) 
-                    {
-                        if (arr[i].birth_year > arr[j].birth_year) 
-                            {
-                                human temp = arr[i];
-                                arr[i] = arr[j];
-                                arr[j] = temp;
-                            }
-                    }
-            }
-    }
-
-int main() {
-    human arr_1[ARRAY_SIZE];
-    human arr_2[ARRAY_SIZE];
-
-    ifstream input_file("file1.txt");
-    if (input_file.is_open()) 
-        {
-            for (int i = 0; i < ARRAY_SIZE; i++) 
-            {
-                input_file >> arr_1[i].first_name >> arr_1[i].last_name >> arr_1[i].birth_year;
-            }
-            input_file.close();
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+ 
+typedef struct 
+    { 
+        char name[20]; 
+        char surname[20]; 
+        int year; 
+    } human; 
+ 
+int compare(const void* a, const void* b) 
+    { 
+        human* h1 = (human*)a; 
+        human* h2 = (human*)b; 
+        return strcmp(h1->surname, h2->surname); 
+    } 
+ 
+    int main() 
+        { 
+            FILE* input = fopen("file_1.txt", "r"); 
+            FILE* output = fopen("file_2.txt", "w"); 
+    
+            if (input == NULL || output == NULL) 
+            { 
+                printf("Your file is empty\n"); 
+                    return 1; 
+            } 
+ 
+            int n = 1; 
+            while (!feof(input)) 
+                { 
+                    char c = fgetc(input); 
+                    if (c == '\n') 
+                        { 
+                            n++; 
+                        } 
+                } 
+            rewind(input); 
+ 
+            human* arr1 = (human*)malloc(sizeof(human) * n); 
+            human* arr2 = (human*)malloc(sizeof(human) * n); 
+            int i; 
+            for (i = 0; i < n; i++) 
+                { 
+                    fscanf(input, "%s %s %d", arr1[i].name, arr1[i].surname, &arr1[i].year); 
+                } 
+            
+            memcpy(arr2, arr1, sizeof(human) * n); 
+            qsort(arr2, n, sizeof(human), compare); 
+            for (i = 0; i < n; i++) 
+               { 
+                    fprintf(output, "%s %s %d\n", arr2[i].name, arr2[i].surname, arr2[i].year); 
+                } 
+            fclose(input); 
+            fclose(output); 
+            free(arr1); 
+            free(arr2); 
+            return 0; 
         }
-
-    sort_by_year(arr_1);
-
-    for (int i = 0; i < ARRAY_SIZE; i++) 
-        {
-            arr_2[i] = arr_1[i];
-        }
-
-    ofstream output_file("file2.txt");
-    if (output_file.is_open()) 
-        {
-            for (int i = 0; i < ARRAY_SIZE; i++) 
-                {
-                    output_file << arr_2[i].first_name << " " << arr_2[i].last_name << " " << arr_2[i].birth_year << endl;
-                }
-                output_file.close();
-        }
-
-    return 0;
-}
 
 ################################################################################
 
